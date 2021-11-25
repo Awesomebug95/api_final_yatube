@@ -36,6 +36,9 @@ class Post(models.Model):
         blank=True
     )
 
+    class Meta:
+        ordering = ('pub_date',)
+
     def __str__(self):
         return self.text[:15]
 
@@ -68,10 +71,16 @@ class Follow(models.Model):
     following = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        blank=True,
-        null=True,
         related_name="following",
         verbose_name='Автор')
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'following'],
+                name='unique_user_follower'
+            )
+        ]
 
     def __str__(self) -> str:
         return f'{self.user.username}-->{self.following.username}'
